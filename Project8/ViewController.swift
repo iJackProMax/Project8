@@ -24,6 +24,7 @@ class ViewController: UIViewController {
         }
     }
     var level = 1
+    var attempts = 0
     
     override func loadView() {
         view = UIView()
@@ -110,6 +111,8 @@ class ViewController: UIViewController {
         
         let width = 150
         let height = 80
+        buttonsView.layer.borderWidth = 1
+        buttonsView.layer.borderColor = UIColor.lightGray.cgColor
         
         for row in 0..<4 {
             for column in 0..<5 {
@@ -149,10 +152,11 @@ class ViewController: UIViewController {
 
     @objc func submitTapped(_ sender: UIButton) {
         guard let answerText = currentAnswer.text else { return }
-        
+       
+        attempts += 1
+        print(attempts)
         if let solutionPosition = solutions.firstIndex(of: answerText) {
             activatedButtons.removeAll()
-            
             var splitAnswers = answersLabel.text?.components(separatedBy: "\n")
             splitAnswers?[solutionPosition] = answerText
             answersLabel.text = splitAnswers?.joined(separator: "\n")
@@ -160,11 +164,32 @@ class ViewController: UIViewController {
             currentAnswer.text = ""
             score += 1
             
-            if score % 7 == 0 {
+            if attempts >= 10 {
                 let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
                 ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
                 present(ac, animated: true)
             }
+            
+//            if score % 7 == 0 {
+//                let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
+//                ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
+//                present(ac, animated: true)
+//            }
+        } else {
+            if attempts >= 10 {
+                let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
+                present(ac, animated: true)
+            }
+            
+            let ac = UIAlertController(title: "Incorrect", message: "Please try again", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "Try Again", style: .default))
+            present(ac, animated: true
+            )
+            if score > 0 {
+                score -= 1
+            }
+            
         }
     }
     
